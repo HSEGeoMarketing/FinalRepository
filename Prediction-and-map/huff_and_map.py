@@ -233,7 +233,7 @@ def show_nearest_interest_points(current_shop_lat, current_shop_lon, radius_map=
     return shop_map
 
 
-if __name__ != '__main__':
+if __name__ == '__main__':
     current_shop_lat1 = 59.941889
     current_shop_lon1 = 30.230887
     current_shop_square1 = 100
