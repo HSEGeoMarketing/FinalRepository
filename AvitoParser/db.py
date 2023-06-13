@@ -28,7 +28,7 @@ from models import Database, AvitoAd
 # Session = sessionmaker(bind=engine)
 # session = Session()
 
-base = Database("postgresql://student:@46.148.230.201:5432/geo_marketing")
+base = Database("postgresql://user/password")
 print(base.session.query(AvitoAd).all())
 base.session.close()
 
