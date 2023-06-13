@@ -1,4 +1,3 @@
-from sqlalchemy import create_engine
 from selenium import webdriver
 from geopy.geocoders import Nominatim
 from bs4 import BeautifulSoup
@@ -6,17 +5,17 @@ import re
 import time
 import csv
 import pandas as pd
+from sqlalchemy import create_engine
 
 geolocator = Nominatim(user_agent="myGeocoder")
 with open('commercial_premises.csv', "w", encoding="utf-8") as file:
     writer = csv.writer(file)
-    writer.writerow(('Name', 'Price', 'Square', 'Address', 'Latitude', 'Longitude', 'Link'))
+    writer.writerow(('Id','Type','Price', 'Square','Building', 'Address', 'Latitude', 'Longitude', 'Link'))
 
-# Specify the number of pages to parse
-num_pages = 1
-
-for i in range(1, num_pages + 1):
-    URL = f'https://www.avito.ru/sankt-peterburg/kommercheskaya_nedvizhimost/sdam-ASgBAgICAUSwCNRW?cd={i}&p={i}'
+num_pages = 6
+counter = 1
+for i in range(1, num_pages+1):
+    URL = f'https://www.avito.ru/sankt-peterburg/kommercheskaya_nedvizhimost/sdam-ASgBAgICAUSwCNRW?district=763&f=ASgBAQICAkSwCNRW9BKk2gECQJ7DDTSO2TmI2TmG2TnAwA4kxuqZAsrqmQI&p={i}'
     driver = webdriver.Chrome(
         executable_path="C:\\Users\\Пользователь\\Desktop\\project\\parsing\\parser\\ChromeWebDriver\\chromedriver.exe")
 
@@ -36,13 +35,15 @@ for i in range(1, num_pages + 1):
                 address_text = address.text.strip()
                 if '-я' in address_text:
                     address_text = address_text.replace('-я', '')
-                if 'В.О.' or 'Васильевского острова' in address_text:
+                if ('В.О.' or 'Васильевского острова' in address_text) and 'Малый' not in address_text and 'Средний' not in address_text and 'Большой' not in address_text:
                     address_text = address_text.replace('В.О.', '')
                     address_text = address_text.replace('Васильевского острова', '')
                 if 'пр-т' in address_text:
                     address_text = address_text.replace('пр-т', 'проспект')
+                if 'б-р' in address_text:
+                    address_text = address_text.replace('б-р', 'бульвар')
                 if 'Санкт-Петербург' not in address_text and 'Ленинградская область' not in address_text \
-                        and 'пос' not in address_text and 'поселок' not in address_text:
+                        and 'пос' not in address_text and 'поселок' not in address_text and 'Шушары' not in address_text and 'Усть-Славянка' not in address_text:
                     address_text = 'Санкт-Петербург, ' + address_text
                 location = geolocator.geocode(address_text)
 
@@ -55,7 +56,7 @@ for i in range(1, num_pages + 1):
                 square = None
             if 'за м²' in price_text:
                 price_match = re.search(r'\d+', price_text)
-                if price_match:
+                if price_match and square is not None:
                     price_value = float(price_match.group()) * square
                 else:
                     price_value = None
@@ -65,6 +66,12 @@ for i in range(1, num_pages + 1):
                     price_value = float(price_match.group())
                 else:
                     price_value = None
+            if square is not None and square < 550.0:
+                typ = 'супермаркет'
+                building = 'жилой дом'
+            else:
+                typ = 'магазин'
+                building = 'отдельное здание'
             if location is not None:
                 latitude = location.latitude
                 longitude = location.longitude
@@ -77,27 +84,17 @@ for i in range(1, num_pages + 1):
             with open('commercial_premises.csv', "a", encoding='utf-8', newline='') as file:
                 writer = csv.writer(file)
                 writer.writerow(
-                    (title.text.strip() if title else None, price_value, square,
+                    (counter,typ, price_value, square,building,
                      address_text if address else None, latitude, longitude, link.strip() if link else None))
+                counter += 1
 
     except Exception as ex:
         print(ex)
     finally:
         driver.quit()
 df = pd.read_csv('commercial_premises.csv')
-# удаляем строки с пропущенными значениями (NaN)
 df = df.dropna()
-# записываем измененный DataFrame обратно в csv файл
-df.to_csv('commercial_premises.csv', index=False)
-engine = create_engine("postgresql://")
 
+engine = create_engine('postgresql+psycopg2://user_name:password@host_name_or_ip/database_name')
 
-data = pd.read_csv('commercial_premises.csv')
-
-with engine.connect() as conn, conn.begin():
-    data.to_sql(
-        'commercial_premises',
-        con=conn,
-        if_exists='append',
-        index=False
-    )
+df.to_sql('table_name', con=engine, schema='dbo', if_exists='replace', index=False)
