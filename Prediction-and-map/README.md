@@ -19,4 +19,6 @@ model_nn.ipynb - код обучения модели на PyTorch; model - со
 
 (ось x - номер магазина, ось y - поток покупателей)
 
-![](visualisation.jpg)
+
+!
+![1](https://github.com/HSEGeoMarketing/FinalRepository/assets/112485129/877a4210-1dff-4c2b-92a6-eb691e180f11)
