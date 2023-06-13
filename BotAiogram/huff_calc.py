@@ -30,6 +30,6 @@ nn_model.eval()
 def prediction(lat, lon, square):
     huff = huff_and_map.calculate_huff(lat, lon, square)
 
-    expected = nn_model(torch.tensor([[huff, square, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0]]))
+    expected = nn_model(torch.tensor([[huff, square, 0, (1,0)[square < 550], 0, (0,1)[square < 550], 0, 0, 0, 0, 0, 0, 0, 0, 0, (0,1)[square < 550], 0, (1,0)[square < 550]]]))
 
     return int(expected)
