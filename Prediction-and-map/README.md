@@ -1,11 +1,17 @@
 # Prediction and Map
-huff_and_map.py - код функций для расчета Хаффа и для генерации карты по координатам
+`huff_and_map.py` - код функций для расчета Хаффа и для генерации карты по координатам
 
-model_prediction.py - код функции, которая по площади и координатам выводит ожидаемый поток покупателей в день с помощью нейронной сети на PyTorch
+`model_prediction.py` - код функции, которая по площади и координатам выводит ожидаемый поток покупателей в день с помощью нейронной сети на PyTorch
+#
+Карта:
+
+![](https://github.com/HSEGeoMarketing/FinalRepository/assets/112485129/877a4210-1dff-4c2b-92a6-eb691e180f11)
+
 #
 Модель для предсказания потока покупателей в день:
 
-model_nn.ipynb - код обучения модели на PyTorch; model - сохраненные параметры
+`model_nn.ipynb` - код обучения модели на PyTorch;
+`model` - сохраненные параметры
 # 
 Были проанализированы результаты рабты линейных моделей и RandomForest из библиотеки sklearn,
 модели на основе градиентного бустинга из библиотек CatBoost и XGBoost,
@@ -19,6 +25,6 @@ model_nn.ipynb - код обучения модели на PyTorch; model - со
 
 (ось x - номер магазина, ось y - поток покупателей)
 
+![](https://github.com/HSEGeoMarketing/FinalRepository/assets/112485129/c93b4b54-9c66-40f0-810c-bd0105517495)
 
-!
-![1](https://github.com/HSEGeoMarketing/FinalRepository/assets/112485129/877a4210-1dff-4c2b-92a6-eb691e180f11)
+
