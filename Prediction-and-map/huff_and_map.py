@@ -46,11 +46,29 @@ def is_nan(val):
     return val != val
 
 
+SHOP_SQUARES = {
+    'Магнит': 400,
+    'Пятерочка': 400,
+    'Перекресток': 1000,
+    'Дикси': 350,
+    'Карусель': 4000,
+    'Семишагофф': 250,
+    'ВкусВилл': 150,
+    'Лента': 2200,
+    'Ашан': 11500,
+    'Окей': 7300,
+    'Метро Кэш энд Керри': 6000,
+    'Metro': 6000,
+    'Метро': 6000
+}
+
+TABS_APART = {'building': ['apartments', 'house']}
+TABS_SHOP = {'shop': ['convenience', 'supermarket']}
+
+
 # getting shop parameters to calculate Huff
 def fill_shops(shops):
     shops_huff = []
-
-
 
     for shop_point, shop_name in zip(shops['geometry'], shops['name']):
 
@@ -58,28 +76,8 @@ def fill_shops(shops):
             shop_lon = shop_point.x
             shop_lat = shop_point.y
 
-            if shop_name == 'Магнит':
-                shop_square = 400
-            elif shop_name == 'Перекресток':
-                shop_square = 1000
-            elif shop_name == 'Дикси':
-                shop_square = 350
-            elif shop_name == 'Пятерочка':
-                shop_square = 400
-            elif shop_name == 'Карусель':
-                shop_square = 4000
-            elif shop_name == 'Семишагофф':
-                shop_square = 250
-            elif shop_name == 'ВкусВилл':
-                shop_square = 150
-            elif shop_name == 'Лента':
-                shop_square = 2200
-            elif shop_name == 'Ашан':
-                shop_square = 11500
-            elif shop_name == 'Окей':
-                shop_square = 7300
-            elif shop_name == 'Метро Кэш энд Керри' or shop_name == 'Metro' or shop_name == 'Метро':
-                shop_square = 6000
+            if shop_name in SHOP_SQUARES:
+                shop_square = SHOP_SQUARES[shop_name]
             else:
                 shop_square = 75
 
@@ -132,11 +130,10 @@ def fill_apartments(apartments):
 
 def calculate_huff(current_shop_lat, current_shop_lon, current_shop_square, radius_shop=2000,
                    radius_residental=1000):
-    tags_apart = {'building': ['apartments', 'house']}
-    tags_shop = {'shop': ['convenience', 'supermarket']}
-    apartments = ox.geometries_from_point(tuple([current_shop_lat, current_shop_lon]), tags=tags_apart,
+
+    apartments = ox.geometries_from_point(tuple([current_shop_lat, current_shop_lon]), tags=TABS_APART,
                                           dist=radius_residental)
-    shops = ox.geometries_from_point(tuple([current_shop_lat, current_shop_lon]), tags=tags_shop, dist=radius_shop)
+    shops = ox.geometries_from_point(tuple([current_shop_lat, current_shop_lon]), tags=TABS_SHOP, dist=radius_shop)
 
     apart_huff = fill_apartments(apartments)
 
@@ -214,11 +211,9 @@ def show_nearest_apartments(current_shop_lat, current_shop_lon, shop_map, apartm
 
 
 def show_nearest_interest_points(current_shop_lat, current_shop_lon, radius_map=200, zoom=17):
-    tags_apart = {'building': ['apartments', 'house']}
-    tags_shop = {'shop': ['convenience', 'supermarket']}
-    apart = ox.geometries_from_point(tuple([current_shop_lat, current_shop_lon]), tags=tags_apart,
+    apart = ox.geometries_from_point(tuple([current_shop_lat, current_shop_lon]), tags=TABS_APART,
                                      dist=radius_map)
-    shops = ox.geometries_from_point(tuple([current_shop_lat, current_shop_lon]), tags=tags_shop, dist=radius_map)
+    shops = ox.geometries_from_point(tuple([current_shop_lat, current_shop_lon]), tags=TABS_SHOP, dist=radius_map)
 
     shop_map = folium.Map(location=[current_shop_lat, current_shop_lon], zoom_start=zoom, tiles='openstreetmap')
     folium.Circle(radius=radius_map * 1.1, location=tuple([current_shop_lat, current_shop_lon]), color="gray",
@@ -238,7 +233,7 @@ if __name__ == '__main__':
     current_shop_lon1 = 30.230887
     current_shop_square1 = 100
 
-    your_map = show_nearest_interest_points(current_shop_lat1, current_shop_lon1, radius_map=400, zoom=16)
+    your_map = show_nearest_interest_points(current_shop_lat1, current_shop_lon1, radius_map=500, zoom=16)
     map_file = 'map.html'
 
     your_map.save(map_file)
