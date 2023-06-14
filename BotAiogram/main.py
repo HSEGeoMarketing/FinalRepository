@@ -4,16 +4,16 @@ import os
 
 from geopy.geocoders import Nominatim
 
-import untitled6
+import pred_cat
 import huff2
-import model_prediction
+import huff_calc
 
-bot = aiogram.Bot('5498974651:AAFxiesEsLcRnrd1RzJEPRqi2gEAc91zlAA')
+bot = aiogram.Bot('TOKEN')
 dp = aiogram.Dispatcher(bot)
 geolocator = Nominatim(user_agent="myGeocoder")
 
 keyboard = aiogram.types.ReplyKeyboardMarkup()
-keyboard.row('/start', 'Топ-5 мест для магазина', 'Проходимость по адресу', '/quit', '/help')  # Добавлено /help
+keyboard.row('/start', '/quit', '/help', 'Топ-5 мест для магазина', 'Проходимость по адресу')
 
 flag_top = False
 flag_pass = False
@@ -57,7 +57,7 @@ async def process_single_shop(i, address_info, chat_id):
 
 async def process_request1(chat_id, name):
     try:
-        results = await asyncio.to_thread(untitled6.top5, name)
+        results = await asyncio.to_thread(pred_cat.top5, name)
         if results:
             response = f"Топ 5 магазинов для розничной сети '{name}':\n"
             addresses = []
@@ -95,7 +95,7 @@ async def process_request2(chat_id, address, square):
                 await bot.send_message(chat_id, "Некорректное значение площади. Пожалуйста, введите число.")
                 return
             square = float(square)
-            passability = await asyncio.to_thread(model_prediction.prediction, lat, lon, square)
+            passability = await asyncio.to_thread(huff_calc.prediction, lat, lon, square)
             await bot.send_message(chat_id, f"Предполагаемая посещаемость: {passability} человек в день")
             shop_map = await asyncio.to_thread(huff2.show_nearest_interest_points, lat, lon)
             map_file = f"map_place.html"
