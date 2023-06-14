@@ -1,10 +1,7 @@
 import torch
 from torch import nn
 
-
 import huff_and_map
-
-
 
 class NeuralNetwork(torch.nn.Module):
     def __init__(self):
