@@ -62,8 +62,8 @@ SHOP_SQUARES = {
     'Метро': 6000
 }
 
-TABS_APART = {'building': ['apartments', 'house']}
-TABS_SHOP = {'shop': ['convenience', 'supermarket']}
+TAGS_APART = {'building': ['apartments', 'house']}
+TAGS_SHOP = {'shop': ['convenience', 'supermarket']}
 
 
 # getting shop parameters to calculate Huff
@@ -131,9 +131,9 @@ def fill_apartments(apartments):
 def calculate_huff(current_shop_lat, current_shop_lon, current_shop_square, radius_shop=2000,
                    radius_residental=1000):
 
-    apartments = ox.geometries_from_point(tuple([current_shop_lat, current_shop_lon]), tags=TABS_APART,
+    apartments = ox.geometries_from_point(tuple([current_shop_lat, current_shop_lon]), tags=TAGS_APART,
                                           dist=radius_residental)
-    shops = ox.geometries_from_point(tuple([current_shop_lat, current_shop_lon]), tags=TABS_SHOP, dist=radius_shop)
+    shops = ox.geometries_from_point(tuple([current_shop_lat, current_shop_lon]), tags=TAGS_SHOP, dist=radius_shop)
 
     apart_huff = fill_apartments(apartments)
 
@@ -211,9 +211,9 @@ def show_nearest_apartments(current_shop_lat, current_shop_lon, shop_map, apartm
 
 
 def show_nearest_interest_points(current_shop_lat, current_shop_lon, radius_map=200, zoom=17):
-    apart = ox.geometries_from_point(tuple([current_shop_lat, current_shop_lon]), tags=TABS_APART,
+    apart = ox.geometries_from_point(tuple([current_shop_lat, current_shop_lon]), tags=TAGS_APART,
                                      dist=radius_map)
-    shops = ox.geometries_from_point(tuple([current_shop_lat, current_shop_lon]), tags=TABS_SHOP, dist=radius_map)
+    shops = ox.geometries_from_point(tuple([current_shop_lat, current_shop_lon]), tags=TAGS_SHOP, dist=radius_map)
 
     shop_map = folium.Map(location=[current_shop_lat, current_shop_lon], zoom_start=zoom, tiles='openstreetmap')
     folium.Circle(radius=radius_map * 1.1, location=tuple([current_shop_lat, current_shop_lon]), color="gray",
